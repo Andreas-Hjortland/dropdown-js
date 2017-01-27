@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Hello, world</title>
+
+        <style>
+            body {
+                font-family : sans-serif;
+				max-width   : 1200px;
+				padding     : 0 1em;
+				margin      : 0 auto;
+            }
+            [data-dropdown] {
+                position         : absolute;
+                background-color : rgb(242, 242, 242);
+                display          : none;
+                margin           : 0;
+                padding          : 0;
+                line-height      : 1.5;
+                list-style       : none;
+                white-space      : nowrap;
+                cursor           : default;
+                border           : 1px solid rgb(202, 202, 202);
+                box-shadow       : 5px 5px 5px rgba(0, 0, 0, 0.5);
+            }
+            [data-dropdown].opened {
+				display : block;
+			}
+            [data-dropdown] li {
+                padding-left  : 1em;
+                padding-right : 1em;
+                margin        : 0.05em;
+				position      : relative;
+            }
+            [data-dropdown] li.subnav:after {
+                content      : '>';
+                margin-left  : 1em;
+                margin-right : -0.5em;
+            }
+            [data-dropdown] li > ul {
+                position   : absolute;
+                margin     : 0;
+                padding    : 0;
+                list-style : none;
+                display    : none;
+                border     : 1px solid rgb(202, 202, 202);
+                box-shadow : 3px 3px 2px rgba(0, 0, 0, 0.5);
+				z-index    : 1;
+            }
+            [data-dropdown] li.active, [data-dropdown] li.open {
+                background-color : rgb(145, 201, 247);
+            }
+            [data-dropdown] li.open > ul {
+                display : block;
+            }
+            [data-dropdown] li > ul {
+                background-color : rgb(242, 242, 242);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Hello, world!</h1>
+
+		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta sollicitudin sodales. Morbi finibus pretium erat, quis scelerisque lorem pharetra sit amet. Aenean iaculis elit sit amet neque gravida fringilla. Vestibulum eget rhoncus nisl. Morbi non enim diam. Vestibulum in mollis massa. Mauris ullamcorper, velit sed pulvinar euismod, metus nisi auctor libero, eget interdum nibh ex quis felis. Fusce a auctor sapien, ut volutpat lacus. Suspendisse congue urna ut nisi tristique, nec facilisis purus rhoncus. Aliquam interdum consectetur blandit. Mauris a consectetur dolor. Proin nec nisl sit amet metus sollicitudin condimentum sed et mauris. Duis sodales volutpat est sed aliquet. Maecenas eu sagittis arcu. Morbi cursus nunc risus, nec gravida eros tincidunt ut.</p>
+
+		<p>Cras nec tincidunt nibh. Pellentesque malesuada velit magna. Praesent rutrum vel est eget vehicula. Donec a fermentum metus, vitae varius nisi. Cras a tincidunt tellus. Donec eleifend iaculis lobortis. Curabitur elit diam, pretium ut aliquet in, tristique malesuada dui. Etiam ex diam, volutpat at rutrum sed, finibus sit amet nunc. Nullam gravida dictum rhoncus. Sed sit amet gravida est. Integer ullamcorper justo auctor ultricies consectetur. Praesent tempus metus at finibus elementum. Phasellus et facilisis tellus, at laoreet massa. Fusce efficitur nisl a interdum eleifend. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+
+		<p>Duis non suscipit tortor, at congue mi. Morbi venenatis dui at rhoncus tincidunt. Maecenas vitae posuere justo. Integer laoreet euismod sagittis. Proin a velit vulputate, varius mauris ac, facilisis sem. Sed lacinia lobortis ante, ut porta risus maximus eu. In hac habitasse platea dictumst. Donec congue tincidunt erat in aliquet. Duis vitae tellus malesuada, viverra mauris sit amet, blandit nibh. Donec ut ligula rhoncus, pulvinar ipsum non, laoreet sem. Aenean sed finibus erat. Phasellus finibus egestas ipsum at mattis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec accumsan metus nec iaculis aliquam.</p>
+
+		<p>Aenean tristique blandit viverra. Mauris diam magna, blandit quis ligula quis, eleifend elementum felis. Vestibulum in dolor eget neque vulputate laoreet sit amet sed nunc. Curabitur pulvinar, justo eu tristique lobortis, diam erat porta erat, at consequat dolor dui nec elit. Phasellus sit amet vehicula augue. Nam congue libero et convallis sagittis. In condimentum dapibus libero at consectetur. Proin bibendum nisl nec pellentesque sodales. Phasellus a leo massa. Fusce finibus euismod imperdiet. Donec nec tortor libero. In lobortis, lacus sed eleifend efficitur, leo nulla fringilla elit, eu pulvinar nibh enim quis elit. Donec sapien nulla, porttitor vel justo id, dignissim efficitur nulla. Aenean vel diam quis leo semper porttitor et nec odio.</p>
+
+		<p>Duis id diam pellentesque, efficitur justo ut, pretium purus. Phasellus sit amet pretium massa. Donec condimentum velit vel enim pellentesque, a commodo lectus consequat. Donec sed est a ante laoreet elementum. Phasellus facilisis sem erat, sit amet aliquet erat sollicitudin id. Curabitur mattis arcu vel semper rhoncus. Proin tristique dolor consectetur massa auctor bibendum. Vivamus nulla purus, tempor sed est vel, dapibus finibus nunc. Cras porta sed ligula eu rhoncus. Maecenas at efficitur neque. Proin enim tortor, convallis eu commodo vel, efficitur id nibh. Sed pretium tortor vitae auctor bibendum. Maecenas vitae euismod dui, quis placerat elit. Duis lobortis pharetra consectetur.</p>
+
+		<p>Ut ac tempus sapien. Mauris pharetra commodo accumsan. Vestibulum gravida, est eget tempus imperdiet, lectus odio eleifend sapien, eu ultricies ligula nulla id augue. Donec ac mi fringilla, rhoncus erat ut, tristique lorem. Morbi commodo tincidunt lacus dapibus faucibus. Donec congue lacinia odio, ac convallis erat accumsan sit amet. Sed vehicula nulla quis ante porta, vel consequat orci aliquet. Sed mollis nulla et finibus consectetur. Phasellus ut imperdiet arcu, finibus faucibus ligula. Pellentesque quis tortor ultricies, condimentum tortor sit amet, luctus lectus. Quisque purus nisl, dignissim sit amet tristique in, tincidunt quis enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+
+		<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum vitae diam eleifend, commodo elit eget, euismod magna. Suspendisse faucibus sed turpis et tristique. Nunc erat ipsum, tincidunt imperdiet molestie quis, malesuada nec leo. Nullam ultrices rutrum libero non sollicitudin. Duis varius rhoncus sapien eget malesuada. Donec vitae justo tincidunt, porta nisi ac, iaculis risus. Nam egestas sit amet ex vitae varius.</p>
+
+		<p>Donec eu metus quam. Pellentesque commodo purus ante, vitae sollicitudin enim volutpat convallis. Vivamus iaculis in lorem vitae pretium. Nulla condimentum nisi at eleifend pretium. Phasellus cursus ligula nibh, eget dignissim ex varius volutpat. Pellentesque ultricies porttitor varius. Vestibulum non massa sem. Nullam ac mattis risus.</p>
+
+
+        <button type="button" data-dropdown-trigger="dropdown">Click</button>
+
+        <button type="button" style="float: right;" data-dropdown-trigger="dropdown">Click</button>
+
+		<p>Maecenas et venenatis nunc, vel rutrum felis. Cras tortor est, dictum non mollis vitae, maximus at lorem. Aliquam at porta elit, nec faucibus nibh. Nunc et scelerisque lorem. Fusce in erat diam. Proin aliquam purus eu urna hendrerit rhoncus. Aenean consectetur ultrices posuere.</p>
+
+		<p>Sed condimentum laoreet nisl id vestibulum. Fusce malesuada augue nec lorem rutrum, sit amet ultrices libero ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer ut neque purus. Nullam auctor mauris sed pellentesque ultrices. Suspendisse potenti. Fusce tempor efficitur odio in feugiat. Pellentesque nec nulla a justo convallis volutpat sit amet a neque. Duis non sem rutrum, dignissim sapien sed, efficitur turpis. Sed vulputate, dui et dapibus luctus, diam eros viverra lacus, et sodales felis leo sed elit. Phasellus condimentum eleifend urna eget molestie. Cras egestas tempor cursus. Vestibulum efficitur urna at mi aliquet commodo.</p>
+
+        <ul data-dropdown id="dropdown">
+            <li>Item 1</li>
+            <li>Item 2</li>
+            <li>Item 3</li>
+            <li class="subnav">
+                Submenu 1
+                <ul>
+                    <li>Sub1-item 1</li>
+                    <li>Sub1-item 2</li>
+                    <li class="subnav">
+                        Sub1-item 3
+                        <ul>
+                            <li>Sub1Sub-item 1</li>
+                            <li>Sub1Sub-item 2</li>
+                        </ul>
+                    </li>
+                    <li>Sub1-item 4</li>
+                </ul>
+            </li>
+            <li class="subnav">
+                Submenu 2
+                <ul>
+                    <li>Sub2-item 1</li>
+                    <li>Sub2-item 2</li>
+                    <li>Sub2-item 3</li>
+                    <li>Sub2-item 4</li>
+                </ul>
+            </li>
+        </ul>
+
+		<!--[if IE]>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
+		<![endif]-->
+        <script type="text/javascript" src="dist/dropdown.js"></script>
+    </body>
+</html>
+
