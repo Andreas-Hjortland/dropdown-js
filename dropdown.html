@@ -8,13 +8,16 @@
         <title>Hello, world</title>
 
         <style>
+            html,body,* {
+                box-sizing : border-box;
+            }
             body {
                 font-family : sans-serif;
                 max-width   : 1200px;
                 padding     : 0 1em;
                 margin      : 0 auto;
             }
-            [data-dropdown] {
+            .dropdown {
                 position         : absolute;
                 background-color : rgb(242, 242, 242);
                 display          : none;
@@ -27,21 +30,35 @@
                 border           : 1px solid rgb(202, 202, 202);
                 box-shadow       : 5px 5px 5px rgba(0, 0, 0, 0.5);
             }
-            [data-dropdown].opened {
+            .dropdown.opened {
                 display : block;
             }
-            [data-dropdown] li {
+            .dropdown li {
                 padding-left  : 1em;
                 padding-right : 1em;
                 margin        : 0.05em;
                 position      : relative;
+
+                -webkit-touch-callout : none; /* iOS Safari */
+                        touch-callout : none; /* iOS Safari */
+                -webkit-user-select   : none; /* Safari */
+                 -khtml-user-select   : none; /* Konqueror HTML */
+                   -moz-user-select   : none; /* Firefox */
+                    -ms-user-select   : none; /* Internet Explorer/Edge */
+                        user-select   : none; /* Non-prefixed version, currently supported by Chrome and Opera */
             }
-            [data-dropdown] li.subnav:after {
+            .dropdown li.disabled {
+                opacity : 0.5;
+            }
+            .dropdown li.disabled.active {
+                background-color : transparent;
+            }
+            .dropdown li.subnav:after {
                 content      : '>';
                 margin-left  : 1em;
                 margin-right : -0.5em;
             }
-            [data-dropdown] li > ul {
+            .dropdown li > ul {
                 position   : absolute;
                 margin     : 0;
                 padding    : 0;
@@ -51,13 +68,13 @@
                 box-shadow : 3px 3px 2px rgba(0, 0, 0, 0.5);
                 z-index    : 1;
             }
-            [data-dropdown] li.active, [data-dropdown] li.open {
+            .dropdown li.active, .dropdown li.open {
                 background-color : rgb(145, 201, 247);
             }
-            [data-dropdown] li.open > ul {
+            .dropdown li.open > ul {
                 display : block;
             }
-            [data-dropdown] li > ul {
+            .dropdown li > ul {
                 background-color : rgb(242, 242, 242);
             }
         </style>
@@ -90,40 +107,61 @@
 
         <p>Sed condimentum laoreet nisl id vestibulum. Fusce malesuada augue nec lorem rutrum, sit amet ultrices libero ultricies. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer ut neque purus. Nullam auctor mauris sed pellentesque ultrices. Suspendisse potenti. Fusce tempor efficitur odio in feugiat. Pellentesque nec nulla a justo convallis volutpat sit amet a neque. Duis non sem rutrum, dignissim sapien sed, efficitur turpis. Sed vulputate, dui et dapibus luctus, diam eros viverra lacus, et sodales felis leo sed elit. Phasellus condimentum eleifend urna eget molestie. Cras egestas tempor cursus. Vestibulum efficitur urna at mi aliquet commodo.</p>
 
-        <ul data-dropdown id="dropdown">
-            <li>Item 1</li>
-            <li>Item 2</li>
-            <li>Item 3</li>
-            <li class="subnav">
-                Submenu 1
-                <ul>
-                    <li>Sub1-item 1</li>
-                    <li>Sub1-item 2</li>
-                    <li class="subnav">
-                        Sub1-item 3
-                        <ul>
-                            <li>Sub1Sub-item 1</li>
-                            <li>Sub1Sub-item 2</li>
-                        </ul>
-                    </li>
-                    <li>Sub1-item 4</li>
-                </ul>
-            </li>
-            <li class="subnav">
-                Submenu 2
-                <ul>
-                    <li>Sub2-item 1</li>
-                    <li>Sub2-item 2</li>
-                    <li>Sub2-item 3</li>
-                    <li>Sub2-item 4</li>
-                </ul>
-            </li>
-        </ul>
-
         <!--[if IE]>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
         <![endif]-->
         <script type="text/javascript" src="dist/dropdown.js"></script>
+        <script>
+            // Polyfill for IE
+            if(!NodeList.prototype.forEach)  {
+                NodeList.prototype.forEach = Array.prototype.forEach;
+            }
+
+            var navList = [
+                {
+                    label    : 'Item 1',
+                    action   : '/test.html',
+                },
+                {
+                    label  : 'Item 2',
+                    action : function() { alert('Item 2') },
+                },
+                {
+                    label    : 'Item 3', 
+                    disabled : true,
+                },
+                {
+                    label    : 'Submenu 1',
+                    children : [
+                        { label : 'Sub1-item 1' },
+                        { label : 'Sub1-item 2' },
+                        {
+                            label    : 'Sub1-item 3',
+                            children : [
+                                { label : 'Sub1Sub-item 1' },
+                                { label : 'Sub1Sub-item 2' },
+                            ]
+                        },
+                        { label : 'Sub1-item 4' },
+                    ]
+                },
+                {
+                    label    : 'Submenu 2',
+                    children : [
+                        { label : 'Sub2-item 1' },
+                        { label : 'Sub2-item 2' },
+                        { label : 'Sub2-item 3' },
+                        { label : 'Sub2-item 4' },
+                    ]
+                }
+            ];
+            var dropdown = new dropdown.default(navList);
+            document.querySelectorAll('[data-dropdown-trigger]').forEach(function(elt) {
+                elt.addEventListener('click', function(evt) {
+                    dropdown.handleClick(elt, evt);
+                });
+            });
+        </script>
     </body>
 </html>
 
