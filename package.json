@@ -4,6 +4,8 @@
   "description": "This is a simple pure javascript dropdown menu with no dependencies.",
   "main": "src/dropdown.js",
   "scripts": {
+    "build": "babel src/dropdown.js --out-file dist/dropdown.js --source-maps inline --presets latest",
+    "build:watch": "npm run build -- --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -13,7 +15,7 @@
   "author": "Andreas Hjortland <dropdown-js@hjortland.org>",
   "license": "MIT",
   "devDependencies": {
-    "babel": "^6.5.2",
+    "babel-cli": "^6.22.2",
     "babel-preset-latest": "^6.22.0"
   }
 }
