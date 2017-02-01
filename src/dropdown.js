@@ -57,7 +57,7 @@ elts.forEach(elt => elt.addEventListener('click', evt => {
 			nav.style.left = `${evt.clientX}px`;
 			nav.style.right = '';
 		}
-		nav.style.top = `${window.scrollY + evt.clientY}px`;
+		nav.style.top = `${window.pageYOffset + evt.clientY}px`;
 		nav.style.bottom = '';
 		console.log(rect.height + evt.clientY, window.innerHeight);
 		nav.style.transform = '';
