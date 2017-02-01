@@ -16,19 +16,20 @@ function openNested(subnav) {
 	const ul = subnav.querySelector('ul')
 	const rect = subnav.getBoundingClientRect();
 	const ulRect = ul.getBoundingClientRect();
+
+    ul.style.top = '';
+    ul.style.bottom = '';
+    ul.style.left = '';
+    ul.style.right = '';
 	if((rect.top + ulRect.height) > window.innerHeight) {
-		ul.style.top = '';
 		ul.style.bottom = yPos;
 	} else {
 		ul.style.top = yPos;
-		ul.style.bottom = '';
 	}
 	if((rect.right + ulRect.width) > window.innerWidth) {
-		ul.style.left = '';
 		ul.style.right = xPos;
 	} else {
 		ul.style.left = xPos;
-		ul.style.right = '';
 	}
 }
 function navClick(e) {
@@ -49,27 +50,24 @@ elts.forEach(elt => elt.addEventListener('click', evt => {
 	});
 	nav.classList.add('opened');
 	if(evt.clientX && evt.clientY) {
-		const rect = nav.getBoundingClientRect();
-		if((rect.width + evt.clientX) > window.innerWidth) {
-			nav.style.left = '';
-			nav.style.right = `${window.innerWidth - evt.clientX}px`;
-		} else {
-			nav.style.left = `${evt.clientX}px`;
-			nav.style.right = '';
-		}
+        nav.style.left = `${evt.clientX}px`;
 		nav.style.top = `${window.pageYOffset + evt.clientY}px`;
-		nav.style.bottom = '';
-		console.log(rect.height + evt.clientY, window.innerHeight);
-		nav.style.transform = '';
-		if((rect.height + evt.clientY) > window.innerHeight) {
-			nav.style.transform = 'translateY(-100%)';
-		}
 	} else {
 		const rect = elt.getBoundingClientRect();
 		debug(rect);
 		nav.style.top = `${rect.right}px`;
 		nav.style.left = `${rect.bottom}px`;
 	}
+
+    const rect = nav.getBoundingClientRect();
+    if(rect.right > window.innerWidth) {
+        let pxs = nav.style.left.replace(/px$/, '');
+        nav.style.left = `${pxs - rect.width}px`;
+    }
+    if((rect.bottom) > window.innerHeight) {
+        let pxs = nav.style.top.replace(/px$/, '');
+        nav.style.top = `${pxs - rect.height}px`;
+    }
 	debug({id, nav});
 
 	let timeout;
