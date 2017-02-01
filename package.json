@@ -4,7 +4,7 @@
   "description": "This is a simple pure javascript dropdown/context menu with no dependencies.",
   "main": "src/dropdown.js",
   "scripts": {
-    "build": "babel src/dropdown.js --out-file dist/dropdown.js --source-maps inline --presets latest",
+    "build": "babel src/dropdown.js --out-file dist/dropdown.js --source-maps inline --plugins transform-es2015-modules-umd --presets latest",
     "build:min": "babel src/dropdown.js --out-file dist/dropdown.min.js --presets=latest,babili",
     "build:watch": "npm run build -- --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +17,7 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.22.2",
+    "babel-plugin-transform-es2015-modules-umd": "^6.22.0",
     "babel-preset-babili": "0.0.10",
     "babel-preset-latest": "^6.22.0"
   }
