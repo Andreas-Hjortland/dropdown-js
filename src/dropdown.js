@@ -179,7 +179,7 @@ export default class Dropdown {
             case 39: // right arrow
                 e.stopPropagation();
                 e.preventDefault();
-                if(active) {
+                if(active && active.classList.contains('subnav')) {
                     Dropdown.openNested(active);
                     active.querySelector('li').classList.add('active');
                 }
