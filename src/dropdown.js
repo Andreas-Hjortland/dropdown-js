@@ -199,7 +199,7 @@ export default class Dropdown {
 
     dismiss() {
         this.ul.classList.remove('opened');
-        document.removeEventListener('keypress', this.keyboardNavigation);
+        document.removeEventListener('keydown', this.keyboardNavigation);
         document.removeEventListener('click', this.dismiss);
 
         this.ul.removeEventListener('click', this.navClick);
