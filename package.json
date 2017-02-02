@@ -1,6 +1,6 @@
 {
   "name": "dropdown-js",
-  "version": "0.0.1-alpha3",
+  "version": "0.0.1-alpha4",
   "description": "This is a simple pure javascript dropdown/context menu with no dependencies.",
   "main": "dist/dropdown.js",
   "scripts": {
