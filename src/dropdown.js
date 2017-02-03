@@ -144,6 +144,39 @@ export default class Dropdown {
         this.ul = this._createList(navList);
         this.ul.classList.add('dropdown');
 
+        this._keyboardHandlers = {
+            // up arrow
+            '38': (open, active) => this._go(true, open, active), 
+
+            // down arrow
+            '40': (open, active) => this._go(false, open, active),
+
+            // left arrow
+            '37': (active, open) => {
+                if(active && active.parentElement !== this.ul && active.parentElement.parentElement !== this.ul) {
+                    active.classList.remove(Dropdown._activeClassName);
+                    active.parentElement.parentElement.classList.remove(Dropdown._openClassName);
+                    active.parentElement.parentElement.classList.add(Dropdown._activeClassName);
+                } else if(open && open !== this.ul) {
+                    Dropdown._closeRelated(open.parentElement);
+                }
+            },
+
+            // right arrow
+            '39': active => {
+                if(active && active.classList.contains(Dropdown._subnavClassName)) {
+                    Dropdown._openNested(active);
+                    active.querySelector('li').classList.add(Dropdown._activeClassName);
+                }
+            },
+
+            // enter
+            '13': active => active && active.click(), 
+
+            // escape
+            '27': this.dismiss, 
+        };
+
         (options.context ? options.context : document.body).appendChild(this.ul);
 
         this._keyboardNavigation = this._keyboardNavigation.bind(this);
@@ -211,6 +244,27 @@ export default class Dropdown {
         return ul;
     }
 
+    _go(dirUp, active, open) {
+        const getNext = next => {
+            if(dirUp) {
+                return next.previousElementSibling;
+            } else {
+                return next.nextElementSibling;
+            }
+        };
+        if(active) {
+            active.classList.remove(Dropdown._activeClassName);
+        }
+        let next = (active && getNext(active)) || open.children[dirUp ? (open.children.length - 1) : 0];
+        while(next && next.classList.contains(Dropdown._disabledClassName)) {
+            next = getNext(next);
+        }
+        if(next) {
+            next.classList.add(Dropdown._activeClassName);
+        }
+        return next;
+    }
+
     /**
      * This is the keyboard navigation event handler
      *
@@ -227,77 +281,12 @@ export default class Dropdown {
         }
         let active = open.querySelector(`li.${Dropdown._activeClassName}`);
         this.logger(open);
-        let next;
-        switch(e.keyCode) {
-            case 38: // up arrow
-                e.stopPropagation();
-                e.preventDefault();
-                if(active) {
-                    next = active.previousElementSibling;
-                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
-                        next = next.previousElementSibling;
-                    }
-                    active.classList.remove(Dropdown._activeClassName);
-                }
-                if(!next) {
-                    next = open.children[open.children.length - 1];
-                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
-                        next = next.previousElementSibling;
-                    }
-                }
-                if(next) {
-                    next.classList.add(Dropdown._activeClassName);
-                }
-                break;
-            case 40: // down arrow
-                e.stopPropagation();
-                e.preventDefault();
-                if(active) {
-                    next = active.nextElementSibling;
-                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
-                        next = next.nextElementSibling;
-                    }
-                    active.classList.remove(Dropdown._activeClassName);
-                }
-                if(!next) {
-                    next = open.children[0];
-                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
-                        next = next.nextElementSibling;
-                    }
-                }
-                next.classList.add(Dropdown._activeClassName);
-                break;
-            case 37: // left arrow
-                e.stopPropagation();
-                e.preventDefault();
-                if(active) {
-                    active.classList.remove(Dropdown._activeClassName);
-                    active.parentElement.parentElement.classList.remove(Dropdown._openClassName);
-                    active.parentElement.parentElement.classList.add(Dropdown._activeClassName);
-                } else {
-                    if(open && open !== this.ul) {
-                        Dropdown._closeRelated(open.parentElement);
-                    }
-                }
-                break;
-            case 39: // right arrow
-                e.stopPropagation();
-                e.preventDefault();
-                if(active && active.classList.contains(Dropdown._subnavClassName)) {
-                    Dropdown._openNested(active);
-                    active.querySelector('li').classList.add(Dropdown._activeClassName);
-                }
-                break;
-            case 13: // enter
-                e.stopPropagation();
-                e.preventDefault();
-                if(active) {
-                    active.click();
-                }
-                break;
-            case 27:
-                this.dismiss();
-                break;
+
+        const key = `${e.keyCode}`;
+        if(this._keyboardHandlers.hasOwnProperty(key)) {
+            e.stopPropagation();
+            e.preventDefault();
+            this._keyboardHandlers[key](active, open);
         }
     }
 
