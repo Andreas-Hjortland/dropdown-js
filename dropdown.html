@@ -98,10 +98,9 @@
             ];
             var dropdown = new dropdown.default(navList);
             document.querySelectorAll('[data-dropdown-trigger]').forEach(function(elt) {
-                elt.addEventListener('click', function(evt) {
-                    dropdown.handleClick(elt, evt);
-                });
+                elt.addEventListener('click', dropdown.openClick.bind(dropdown));
             });
+            document.addEventListener('contextmenu', dropdown.openClick.bind(dropdown));
         </script>
     </body>
 </html>
