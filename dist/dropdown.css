@@ -15,9 +15,8 @@
   display: block;
 }
 .dropdown li {
-  padding-left: 1em;
-  padding-right: 1em;
-  margin: 0.05em;
+  padding: 0.05em 1em;
+  margin: 0;
   position: relative;
   -webkit-touch-callout: none;
   /* iOS Safari */

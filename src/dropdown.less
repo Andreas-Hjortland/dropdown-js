@@ -1,6 +1,8 @@
 @bgColor : rgb(242, 242, 242);
 @hlColor : rgb(145, 201, 247);
 
+@leftRightPadding : 1em;
+
 .dropdown {
     position         : absolute;
     background-color : @bgColor;
@@ -19,10 +21,9 @@
     }
 
     li {
-        padding-left  : 1em;
-        padding-right : 1em;
-        margin        : 0.05em;
-        position      : relative;
+        padding  : 0.05em @leftRightPadding;
+        margin   : 0;
+        position : relative;
 
         -webkit-touch-callout : none; /* iOS Safari */
                 touch-callout : none; /* iOS Safari */
@@ -57,8 +58,8 @@
         }
         &.subnav:after {
             content      : '>';
-            margin-left  : 1em;
-            margin-right : -0.5em;
+            margin-left  : @leftRightPadding;
+            margin-right : -(@leftRightPadding - 0.5em);
         }
     }
 }
