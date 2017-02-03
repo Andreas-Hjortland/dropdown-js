@@ -10,7 +10,8 @@
     "build:doc": "jsdoc src/dropdown.js --pedantic --readme ./README.md --destination ./doc/",
     "build:css": "lessc src/dropdown.less dist/dropdown.css",
     "build:css:min": "lessc src/dropdown.less dist/dropdown.min.css --clean-css=\"--s1 --advanced --compatibility=ie9\"",
-    "build:all": "npm-run-all --parallel build build:min build:doc build:css build:css:min",
+    "build:lint": "eslint src/dropdown.js",
+    "build:all": "npm-run-all --parallel build build:min build:lint build:doc build:css build:css:min",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
