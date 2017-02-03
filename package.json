@@ -8,6 +8,8 @@
     "build:min": "babel src/dropdown.js --out-file dist/dropdown.min.js --plugins transform-es2015-modules-umd --presets=latest,babili",
     "build:watch": "npm run build -- --watch",
     "build:doc": "jsdoc src/dropdown.js --pedantic --readme ./README.md --destination ./doc/",
+    "build:css": "lessc src/dropdown.less dist/dropdown.css",
+    "build:css:min": "lessc src/dropdown.less dist/dropdown.min.css --clean-css=\"--s1 --advanced --compatibility=ie9\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -23,5 +25,7 @@
     "babel-preset-babili": "0.0.10",
     "babel-preset-latest": "^6.22.0",
     "jsdoc": "^3.4.3",
+    "less": "^2.7.2",
+    "less-plugin-clean-css": "^1.5.1"
   }
 }
