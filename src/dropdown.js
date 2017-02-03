@@ -137,7 +137,7 @@ export default class Dropdown {
      * @param {Dropdown~Options} options - Optional parameters for this instance
      */
     constructor(navList, options = {}) { 
-        this.logger = options.logger ? options.logger : console.log.bind(console); //() => {};
+        this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
         this.ul = this._createList(navList);
         this.ul.classList.add('dropdown');
 
@@ -237,8 +237,13 @@ export default class Dropdown {
                 }
                 if(!next) {
                     next = open.children[open.children.length - 1];
+                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
+                        next = next.previousElementSibling;
+                    }
                 }
-                next.classList.add(Dropdown._activeClassName);
+                if(next) {
+                    next.classList.add(Dropdown._activeClassName);
+                }
                 break;
             case 40: // down arrow
                 e.stopPropagation();
@@ -252,6 +257,9 @@ export default class Dropdown {
                 }
                 if(!next) {
                     next = open.children[0];
+                    while(next && next.classList.contains(Dropdown._disabledClassName)) {
+                        next = next.nextElementSibling;
+                    }
                 }
                 next.classList.add(Dropdown._activeClassName);
                 break;
