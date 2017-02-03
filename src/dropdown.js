@@ -138,6 +138,9 @@ export default class Dropdown {
      */
     constructor(navList, options = {}) { 
         this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
+
+        this.dismiss = this.dismiss.bind(this);
+
         this.ul = this._createList(navList);
         this.ul.classList.add('dropdown');
 
@@ -145,7 +148,6 @@ export default class Dropdown {
 
         this._keyboardNavigation = this._keyboardNavigation.bind(this);
 
-        this.dismiss = this.dismiss.bind(this);
     }
 
     /**
@@ -187,10 +189,12 @@ export default class Dropdown {
                 });
 
                 if(navElt.children) {
-                    li.addEventListener('click', e => {
-                        Dropdown._openNested(li);
-                        e.preventDefault();
-                        e.stopPropagation();
+                    li.addEventListener('click', function(e) {
+                        if(e.target === this) {
+                            Dropdown._openNested(li);
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
                     });
                     li.appendChild(this._createList(navElt.children));
                     li.classList.add(Dropdown._subnavClassName);
@@ -302,6 +306,7 @@ export default class Dropdown {
      * Close a dropdown and remove all event listeners on it
      */
     dismiss() {
+        this.logger('dismiss');
         this.ul.classList.remove(Dropdown._openClassName);
         document.removeEventListener('keydown', this._keyboardNavigation);
         document.removeEventListener('click', this.dismiss);
