@@ -1,16 +1,16 @@
 const gulp       = require('gulp');
 const babel      = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
-const less       = require('gulp-less');
 const clean      = require('gulp-clean');
 const rename     = require('gulp-rename');
 const cleanCSS   = require('gulp-clean-css');
 const eslint     = require('gulp-eslint');
 const jsdoc      = require('gulp-jsdoc3');
+const postcss    = require('gulp-postcss');
+const cssnext    = require('postcss-cssnext');
 
 const jsSrc = 'src/dropdown.js';
-const cssSrc = 'src/dropdown.less';
-
+const cssSrc = 'src/dropdown.css';
 
 const presets = ['latest'];
 const minPresets = presets.concat(['babili']);
@@ -60,8 +60,17 @@ gulp.task('min', compileJs.bind(null, true));
 
 gulp.task('style', () => gulp.src(cssSrc)
 	.pipe(sourcemaps.init())
-	.pipe(less())
+	.pipe(postcss([
+		cssnext({
+			browsers: [
+				'Explorer >= 9', 
+				'Last 2 versions', 
+				'Firefox ESR'
+			],
+		}),
+	]))
 	.pipe(cleanCSS({compatibility: 'ie9'}))
+	.pipe(sourcemaps.write('.'))
 	.pipe(gulp.dest('dist')));
 
 gulp.task('watch', ['lint', 'js', 'style'], () => {
