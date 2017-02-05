@@ -78,5 +78,5 @@ gulp.task('watch', ['lint', 'js', 'style'], () => {
 	gulp.watch(cssSrc, ['style']);
 });
 
-gulp.task('dist', ['clean', 'lint-fail', 'js', 'min', 'style', 'doc']);
-gulp.task('default', ['clean', 'lint-fail', 'js', 'style', 'doc']);
+gulp.task('dist', ['lint-fail', 'js', 'min', 'style', 'doc']);
+gulp.task('default', ['lint-fail', 'js', 'style', 'doc']);
