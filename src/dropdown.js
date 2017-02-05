@@ -1,9 +1,7 @@
-/** @module */
-
 /**
  * Class representing a dropdown
  */
-export default class Dropdown {
+class Dropdown {
     // General documentation of the types
     /**
      * @typedef {Object} Dropdown~NavItem
@@ -357,3 +355,5 @@ export default class Dropdown {
         return this.ul;
     }
 }
+
+export default Dropdown;
