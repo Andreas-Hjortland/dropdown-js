@@ -49,7 +49,7 @@ gulp.task('doc', () => gulp.src(['README.md', './src/dropdown.js'])
 			monospaceLinks : false
 		},
 		opts: {
-			destination : './doc',
+			destination : './docs',
 			pedantic    : true,
 		}
 	})));
