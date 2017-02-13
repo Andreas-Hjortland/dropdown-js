@@ -6,10 +6,11 @@ class Dropdown {
     /**
      * @typedef {Object} Dropdown~NavItem
      * This is the structure of a navigation item
-     * @property {string} label                   - The label which is used in the menu
-     * @property {boolean} [disabled=false]       - If this is true the item is disabled. If this is true we will not
-     *                                              navigate according to the action parameter or run the action
-     *                                              callback.
+     * @property {string}  label            - The label which is used in the menu
+     * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
+     * @property {boolean} [disabled=false] - If this is true the item is disabled. If this is true we will not
+     *                                        navigate according to the action parameter or run the action
+     *                                        callback.
      * @property {(string|Dropdown~actionCallback)} action - What to do when we select this nav item. If this is a string we will
      *                                              navigate like an &lt;a&gt; tag
      */
@@ -17,9 +18,10 @@ class Dropdown {
     /**
      * @typedef {Object} Dropdown~NavMenu
      * This is the structure of a navigation submenu
-     * @property {string} label                    - The label which is used in the menu
-     * @property {boolean} [disabled=false]        - If this is true the item is disabled. When disabled it will not be
-     *                                               expanded
+     * @property {string} label             - The label which is used in the menu
+     * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
+     * @property {boolean} [disabled=false] - If this is true the item is disabled. When disabled it will not be
+     *                                        expanded
      * @property {Array<Dropdown~NavItem|Dropdown~NavMenu>} children - The children of this menu
      */
 
@@ -43,6 +45,13 @@ class Dropdown {
      */
 
     // Private members
+    /**
+     * Base class name
+     *
+     * @private
+     */
+    static get _baseClassName() { return 'dropdown'; }
+
     /**
      * Class name of a subnav
      *
@@ -98,6 +107,7 @@ class Dropdown {
             subnav.classList.remove(Dropdown._openClassName);
         });
     }
+
     /**
      * A helper function to open a specific submenu
      *
@@ -128,21 +138,8 @@ class Dropdown {
         }
     }
 
-
-    /**
-     * @constructor
-     * @param {Array<Dropdown~NavItem|Dropdown~NavMenu>} navList - Object representation of the context menu.
-     * @param {Dropdown~Options} options - Optional parameters for this instance
-     */
-    constructor(navList, options = {}) { 
-        this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
-
-        this.dismiss = this.dismiss.bind(this);
-
-        this.ul = this._createList(navList);
-        this.ul.classList.add('dropdown');
-
-        this._keyboardHandlers = {
+    get _keyboardHandlers() {
+        return {
             // up arrow
             '38': (open, active) => this._go(true, open, active), 
 
@@ -174,11 +171,26 @@ class Dropdown {
             // escape
             '27': this.dismiss, 
         };
+    }
+
+
+    /**
+     * @constructor
+     * @param {Array<Dropdown~NavItem|Dropdown~NavMenu>} navList - Object representation of the context menu.
+     * @param {Dropdown~Options} options - Optional parameters for this instance
+     */
+    constructor(navList, options = {}) { 
+        this.dismiss = this.dismiss.bind(this);
+        this._keyboardNavigation = this._keyboardNavigation.bind(this);
+        
+        this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
+        this.navList = navList;
+
+        this._items = {};
+        this.ul = this._createList(navList, 'item');
+        this.ul.classList.add(Dropdown._baseClassName);
 
         (options.context ? options.context : document.body).appendChild(this.ul);
-
-        this._keyboardNavigation = this._keyboardNavigation.bind(this);
-
     }
 
     /**
@@ -188,58 +200,101 @@ class Dropdown {
      *
      * @param navList {Array<Dropdown~NavItem|Dropdown~NavMenu>} The object representation of the context menu
      */
-    _createList(navList) {
+    _createList(navList, keyPrefix) {
         const ul = document.createElement('ul');
-        navList.forEach(navElt => {
+
+        var that = this;
+        ul.addEventListener('click', function(e) {
+            const key = e.target.getAttribute('data-key');
+            if(!key || !that._items[key]) {
+                return;
+            }
+            const {li, navElt} = that._items[key];
+
+            if(navElt.disabled) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
+            if(navElt.children) {
+                Dropdown._openNested(li);
+                e.preventDefault();
+                e.stopPropagation();
+            } else if(typeof(navElt.action) === 'string') {
+                window.location.href = navElt.action;
+            } else if(typeof(navElt.action) === 'function') {
+                navElt.action.call(this, e);
+            }
+        });
+
+        navList.forEach((navElt, idx) => {
             const li = document.createElement('li');
+
+            navElt.key = navElt.key ? navElt.key : `${keyPrefix}-${idx}`;
+            if(this._items.hasOwnProperty(navElt.key)) {
+                throw new Error('Got duplicate key');
+            } else {
+                this._items[navElt.key] = { navElt, li };
+            }
+            li.setAttribute('data-key', navElt.key); // only used for debugging
+
             li.innerText = navElt.label;
 
             if(navElt.disabled) {
                 li.classList.add(Dropdown._disabledClassName);
-                li.addEventListener('click', e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-            } else {
-                li.addEventListener('mouseleave', e => {
-                    this.logger('mouseleave', e);
-                    clearTimeout(this.timeout);
-                    e.target.classList.remove(Dropdown._activeClassName);
-                });
-                li.addEventListener('mouseenter', e => {
-                    this.logger('mouseenter', e);
-
-                    e.target.classList.add(Dropdown._activeClassName);
-
-                    clearTimeout(this.timeout);
-                    if(navElt.children) {
-                        this.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
-                    } else {
-                        this.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
-                    }
-                });
-
-                if(navElt.children) {
-                    li.addEventListener('click', function(e) {
-                        if(e.target === this) {
-                            Dropdown._openNested(li);
-                            e.preventDefault();
-                            e.stopPropagation();
-                        }
-                    });
-                    li.appendChild(this._createList(navElt.children));
-                    li.classList.add(Dropdown._subnavClassName);
-                } else if(typeof(navElt.action) === 'string') {
-                    li.addEventListener('click', () => window.location.href = navElt.action);
-                } else if(typeof(navElt.action) === 'function') {
-                    li.addEventListener('click', navElt.action);
+            }
+            li.addEventListener('mouseleave', e => {
+                if(navElt.disabled) {
+                    return;
                 }
+                this.logger('mouseleave', e);
+                clearTimeout(this.timeout);
+                e.target.classList.remove(Dropdown._activeClassName);
+            });
+            li.addEventListener('mouseenter', e => {
+                if(navElt.disabled) {
+                    return;
+                }
+                this.logger('mouseenter', e);
+
+                e.target.classList.add(Dropdown._activeClassName);
+
+                clearTimeout(this.timeout);
+                if(navElt.children) {
+                    this.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
+                } else {
+                    this.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
+                }
+            });
+
+            if(navElt.children) {
+                li.appendChild(this._createList(navElt.children, navElt.key));
+                li.classList.add(Dropdown._subnavClassName);
             }
 
             ul.appendChild(li);
         });
 
         return ul;
+    }
+
+    setDisabledState(key, disabled) {
+        const { li, navElt } = this._items[key];
+        navElt.disabled = disabled;
+        if(disabled) {
+            li.classList.add(Dropdown._disabledClassName);
+            li.classList.remove(Dropdown._openClassName);
+            li.classList.remove(Dropdown._activeClassName);
+
+            li.querySelectorAll(`.${Dropdown._openClassName}, .${Dropdown._activeClassName}`).forEach(elt => {
+                elt.classList.remove(Dropdown._openClassName); 
+                elt.classList.remove(Dropdown._activeClassName);
+            });
+
+        } else {
+            li.classList.remove(Dropdown._disabledClassName);
+        }
     }
 
     _go(dirUp, active, open) {
@@ -299,7 +354,8 @@ class Dropdown {
         document.removeEventListener('click', this.dismiss);
 
         this.ul.querySelectorAll('li').forEach(subnav => {
-            subnav.classList.remove(Dropdown._openClassName,Dropdown._activeClassName);
+            subnav.classList.remove(Dropdown._openClassName);
+            subnav.classList.remove(Dropdown._activeClassName);
         });
     }
 
@@ -333,7 +389,8 @@ class Dropdown {
      */
     open(left, top, autoExpandDir = true) {
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
-            elt.classList.remove(Dropdown._openClassName,Dropdown._activeClassName);
+            elt.classList.remove(Dropdown._openClassName);
+            elt.classList.remove(Dropdown._activeClassName);
         });
         this.ul.classList.add(Dropdown._openClassName);
 
