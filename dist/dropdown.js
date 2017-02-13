@@ -42,7 +42,51 @@
     }();
 
     var Dropdown = function () {
-        _createClass(Dropdown, null, [{
+        _createClass(Dropdown, [{
+            key: '_keyboardHandlers',
+            get: function get() {
+                var _this = this;
+
+                return {
+                    // up arrow
+                    '38': function _(open, active) {
+                        return _this._go(true, open, active);
+                    },
+
+                    // down arrow
+                    '40': function _(open, active) {
+                        return _this._go(false, open, active);
+                    },
+
+                    // left arrow
+                    '37': function _(active, open) {
+                        if (active && active.parentElement !== _this.ul && active.parentElement.parentElement !== _this.ul) {
+                            active.classList.remove(Dropdown._activeClassName);
+                            active.parentElement.parentElement.classList.remove(Dropdown._openClassName);
+                            active.parentElement.parentElement.classList.add(Dropdown._activeClassName);
+                        } else if (open && open !== _this.ul) {
+                            Dropdown._closeRelated(open.parentElement);
+                        }
+                    },
+
+                    // right arrow
+                    '39': function _(active) {
+                        if (active && active.classList.contains(Dropdown._subnavClassName)) {
+                            Dropdown._openNested(active);
+                            active.querySelector('li').classList.add(Dropdown._activeClassName);
+                        }
+                    },
+
+                    // enter
+                    '13': function _(active) {
+                        return active && active.click();
+                    },
+
+                    // escape
+                    '27': this.dismiss
+                };
+            }
+        }], [{
             key: '_closeRelated',
             value: function _closeRelated(subnav) {
                 subnav.parentElement.querySelectorAll('.' + Dropdown._openClassName).forEach(function (subnav) {
@@ -72,6 +116,11 @@
                     ul.style.bottom = '';
                     ul.style.top = Dropdown._nestedYPos;
                 }
+            }
+        }, {
+            key: '_baseClassName',
+            get: function get() {
+                return 'dropdown';
             }
         }, {
             key: '_subnavClassName',
@@ -111,61 +160,21 @@
          * @param {Dropdown~Options} options - Optional parameters for this instance
          */
         function Dropdown(navList) {
-            var _this = this;
-
             var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
             _classCallCheck(this, Dropdown);
 
-            this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
-
             this.dismiss = this.dismiss.bind(this);
+            this._keyboardNavigation = this._keyboardNavigation.bind(this);
 
-            this.ul = this._createList(navList);
-            this.ul.classList.add('dropdown');
+            this.logger = options.logger ? options.logger : console.log.bind(console); // eslint-disable-line no-console
+            this.navList = navList;
 
-            this._keyboardHandlers = {
-                // up arrow
-                '38': function _(open, active) {
-                    return _this._go(true, open, active);
-                },
-
-                // down arrow
-                '40': function _(open, active) {
-                    return _this._go(false, open, active);
-                },
-
-                // left arrow
-                '37': function _(active, open) {
-                    if (active && active.parentElement !== _this.ul && active.parentElement.parentElement !== _this.ul) {
-                        active.classList.remove(Dropdown._activeClassName);
-                        active.parentElement.parentElement.classList.remove(Dropdown._openClassName);
-                        active.parentElement.parentElement.classList.add(Dropdown._activeClassName);
-                    } else if (open && open !== _this.ul) {
-                        Dropdown._closeRelated(open.parentElement);
-                    }
-                },
-
-                // right arrow
-                '39': function _(active) {
-                    if (active && active.classList.contains(Dropdown._subnavClassName)) {
-                        Dropdown._openNested(active);
-                        active.querySelector('li').classList.add(Dropdown._activeClassName);
-                    }
-                },
-
-                // enter
-                '13': function _(active) {
-                    return active && active.click();
-                },
-
-                // escape
-                '27': this.dismiss
-            };
+            this._items = {};
+            this.ul = this._createList(navList, 'item');
+            this.ul.classList.add(Dropdown._baseClassName);
 
             (options.context ? options.context : document.body).appendChild(this.ul);
-
-            this._keyboardNavigation = this._keyboardNavigation.bind(this);
         }
 
         /**
@@ -179,62 +188,109 @@
 
         _createClass(Dropdown, [{
             key: '_createList',
-            value: function _createList(navList) {
+            value: function _createList(navList, keyPrefix) {
                 var _this2 = this;
 
                 var ul = document.createElement('ul');
-                navList.forEach(function (navElt) {
+
+                var that = this;
+                ul.addEventListener('click', function (e) {
+                    var key = e.target.getAttribute('data-key');
+                    if (!key || !that._items[key]) {
+                        return;
+                    }
+                    var _that$_items$key = that._items[key],
+                        li = _that$_items$key.li,
+                        navElt = _that$_items$key.navElt;
+
+
+                    if (navElt.disabled) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    }
+
+                    if (navElt.children) {
+                        Dropdown._openNested(li);
+                        e.preventDefault();
+                        e.stopPropagation();
+                    } else if (typeof navElt.action === 'string') {
+                        window.location.href = navElt.action;
+                    } else if (typeof navElt.action === 'function') {
+                        navElt.action.call(this, e);
+                    }
+                });
+
+                navList.forEach(function (navElt, idx) {
                     var li = document.createElement('li');
+
+                    navElt.key = navElt.key ? navElt.key : keyPrefix + '-' + idx;
+                    if (_this2._items.hasOwnProperty(navElt.key)) {
+                        throw new Error('Got duplicate key');
+                    } else {
+                        _this2._items[navElt.key] = { navElt: navElt, li: li };
+                    }
+                    li.setAttribute('data-key', navElt.key); // only used for debugging
+
                     li.innerText = navElt.label;
 
                     if (navElt.disabled) {
                         li.classList.add(Dropdown._disabledClassName);
-                        li.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                        });
-                    } else {
-                        li.addEventListener('mouseleave', function (e) {
-                            _this2.logger('mouseleave', e);
-                            clearTimeout(_this2.timeout);
-                            e.target.classList.remove(Dropdown._activeClassName);
-                        });
-                        li.addEventListener('mouseenter', function (e) {
-                            _this2.logger('mouseenter', e);
-
-                            e.target.classList.add(Dropdown._activeClassName);
-
-                            clearTimeout(_this2.timeout);
-                            if (navElt.children) {
-                                _this2.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
-                            } else {
-                                _this2.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
-                            }
-                        });
-
-                        if (navElt.children) {
-                            li.addEventListener('click', function (e) {
-                                if (e.target === this) {
-                                    Dropdown._openNested(li);
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }
-                            });
-                            li.appendChild(_this2._createList(navElt.children));
-                            li.classList.add(Dropdown._subnavClassName);
-                        } else if (typeof navElt.action === 'string') {
-                            li.addEventListener('click', function () {
-                                return window.location.href = navElt.action;
-                            });
-                        } else if (typeof navElt.action === 'function') {
-                            li.addEventListener('click', navElt.action);
+                    }
+                    li.addEventListener('mouseleave', function (e) {
+                        if (navElt.disabled) {
+                            return;
                         }
+                        _this2.logger('mouseleave', e);
+                        clearTimeout(_this2.timeout);
+                        e.target.classList.remove(Dropdown._activeClassName);
+                    });
+                    li.addEventListener('mouseenter', function (e) {
+                        if (navElt.disabled) {
+                            return;
+                        }
+                        _this2.logger('mouseenter', e);
+
+                        e.target.classList.add(Dropdown._activeClassName);
+
+                        clearTimeout(_this2.timeout);
+                        if (navElt.children) {
+                            _this2.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
+                        } else {
+                            _this2.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
+                        }
+                    });
+
+                    if (navElt.children) {
+                        li.appendChild(_this2._createList(navElt.children, navElt.key));
+                        li.classList.add(Dropdown._subnavClassName);
                     }
 
                     ul.appendChild(li);
                 });
 
                 return ul;
+            }
+        }, {
+            key: 'setDisabledState',
+            value: function setDisabledState(key, disabled) {
+                var _items$key = this._items[key],
+                    li = _items$key.li,
+                    navElt = _items$key.navElt;
+
+                navElt.disabled = disabled;
+                if (disabled) {
+                    li.classList.add(Dropdown._disabledClassName);
+                    li.classList.remove(Dropdown._openClassName);
+                    li.classList.remove(Dropdown._activeClassName);
+
+                    li.querySelectorAll('.' + Dropdown._openClassName + ', .' + Dropdown._activeClassName).forEach(function (elt) {
+                        elt.classList.remove(Dropdown._openClassName);
+                        elt.classList.remove(Dropdown._activeClassName);
+                    });
+                } else {
+                    li.classList.remove(Dropdown._disabledClassName);
+                }
             }
         }, {
             key: '_go',
@@ -286,7 +342,8 @@
                 document.removeEventListener('click', this.dismiss);
 
                 this.ul.querySelectorAll('li').forEach(function (subnav) {
-                    subnav.classList.remove(Dropdown._openClassName, Dropdown._activeClassName);
+                    subnav.classList.remove(Dropdown._openClassName);
+                    subnav.classList.remove(Dropdown._activeClassName);
                 });
             }
         }, {
@@ -308,7 +365,8 @@
                 var autoExpandDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
                 this.ul.querySelectorAll('.' + Dropdown._openClassName + ',.' + Dropdown._activeClassName).forEach(function (elt) {
-                    elt.classList.remove(Dropdown._openClassName, Dropdown._activeClassName);
+                    elt.classList.remove(Dropdown._openClassName);
+                    elt.classList.remove(Dropdown._activeClassName);
                 });
                 this.ul.classList.add(Dropdown._openClassName);
 
