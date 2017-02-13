@@ -25,15 +25,11 @@
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^3.0.1",
     "gulp-jsdoc3": "^1.0.1",
-    "gulp-less": "^3.3.0",
     "gulp-postcss": "^6.3.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.4.0",
     "gulp-uglify": "^2.0.1",
     "jsdoc": "^3.4.3",
-    "less": "^2.7.2",
-    "less-plugin-clean-css": "^1.5.1",
-    "npm-run-all": "^4.0.1",
     "postcss-cssnext": "^2.9.0"
   }
 }
