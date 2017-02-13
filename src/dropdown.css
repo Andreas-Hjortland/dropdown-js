@@ -1,8 +1,9 @@
 :root {
-	--bgColor     : rgb(242, 242, 242);
-	--hlColor     : rgb(145, 201, 247);
-	--sidePadding : 1em;
-	--brColor     : color(var(--bgColor) blackness(+25%));
+	--bgColor        : rgb(242, 242, 242);
+	--hlColor        : rgb(145, 201, 247);
+	--sidePadding    : 1em;
+	--brColor        : color(var(--bgColor) blackness(+25%));
+    --dividerPadding : 0.25em;
 }
 
 .dropdown {
@@ -32,6 +33,17 @@
 	user-select   : none;
 }
 
+.dropdown li.divider {
+    padding        : 0 0 var(--dividerPadding) 0;
+}
+.dropdown li.divider:after {
+    content        : '';
+    display        : block;
+    width          : 90%;
+    margin         : auto;
+    padding        : var(--dividerPadding) 0 0 0;
+    border-bottom  : 1px solid var(--brColor);
+}
 .dropdown li.disabled {
 	opacity : 0.5;
 }

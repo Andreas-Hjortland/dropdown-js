@@ -4,15 +4,20 @@
 class Dropdown {
     // General documentation of the types
     /**
+     * @typedef {Object} Dropdown~NavDivider
+     * This is the structure of a navigation divider. It is just like the NavItem with no label or action.
+     * @property {string}  [key] - A unique key for this item. It will be auto generated if not supplied
+     */
+
+    /**
      * @typedef {Object} Dropdown~NavItem
      * This is the structure of a navigation item
      * @property {string}  label            - The label which is used in the menu
      * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
-     * @property {boolean} [disabled=false] - If this is true the item is disabled. If this is true we will not
-     *                                        navigate according to the action parameter or run the action
-     *                                        callback.
-     * @property {(string|Dropdown~actionCallback)} action - What to do when we select this nav item. If this is a string we will
-     *                                              navigate like an &lt;a&gt; tag
+     * @property {boolean} [disabled=false] - If this is true the item is disabled. When disabled we will not navigate
+     *                                        according to the action parameter or run the action callback.
+     * @property {(string|Dropdown~actionCallback)} action - What to do when we select this nav item. If this is a
+     *                                                       string we will navigate like an &lt;a&gt; tag
      */
 
     /**
@@ -22,7 +27,7 @@ class Dropdown {
      * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
      * @property {boolean} [disabled=false] - If this is true the item is disabled. When disabled it will not be
      *                                        expanded
-     * @property {Array<Dropdown~NavItem|Dropdown~NavMenu>} children - The children of this menu
+     * @property {Array<Dropdown~NavItem|Dropdown~NavMenu|Dropdown~NavDivider>} children - The children of this menu
      */
 
     /**
@@ -65,6 +70,13 @@ class Dropdown {
      * @private
      */
     static get _openClassName() { return 'open';   }
+
+    /**
+     * Class name of a divider
+     *
+     * @private
+     */
+    static get _dividerClassName() { return 'divider';   }
 
     /*
      * Class name of an active item
@@ -176,7 +188,7 @@ class Dropdown {
 
     /**
      * @constructor
-     * @param {Array<Dropdown~NavItem|Dropdown~NavMenu>} navList - Object representation of the context menu.
+     * @param {Array<Dropdown~NavItem|Dropdown~NavMenu|Dropdown~NavDivider>} navList - Object representation of the context menu.
      * @param {Dropdown~Options} options - Optional parameters for this instance
      */
     constructor(navList, options = {}) { 
@@ -198,7 +210,7 @@ class Dropdown {
      *
      * @private 
      *
-     * @param navList {Array<Dropdown~NavItem|Dropdown~NavMenu>} The object representation of the context menu
+     * @param navList {Array<Dropdown~NavItem|Dropdown~NavMenu|Dropdown~NavDivider>} The object representation of the context menu
      */
     _createList(navList, keyPrefix) {
         const ul = document.createElement('ul');
@@ -211,7 +223,7 @@ class Dropdown {
             }
             const {li, navElt} = that._items[key];
 
-            if(navElt.disabled) {
+            if(navElt.disabled || !navElt.label) {
                 e.preventDefault();
                 e.stopPropagation();
                 return;
@@ -239,27 +251,32 @@ class Dropdown {
             }
             li.setAttribute('data-key', navElt.key); // only used for debugging
 
-            li.innerText = navElt.label;
-
-            if(navElt.disabled) {
+            const divider = typeof navElt.label === 'undefined';
+            if(navElt.disabled || divider) {
                 li.classList.add(Dropdown._disabledClassName);
             }
+            if(divider) { // divider
+                li.classList.add(Dropdown._dividerClassName);
+            } else {
+                li.innerText = navElt.label;
+            }
+
             li.addEventListener('mouseleave', e => {
-                if(navElt.disabled) {
-                    return;
-                }
                 this.logger('mouseleave', e);
                 clearTimeout(this.timeout);
+
                 e.target.classList.remove(Dropdown._activeClassName);
             });
             li.addEventListener('mouseenter', e => {
-                if(navElt.disabled) {
+                this.logger('mouseenter', e);
+                clearTimeout(this.timeout);
+
+                if(navElt.disabled || divider) {
+                    this.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
                     return;
                 }
-                this.logger('mouseenter', e);
 
                 e.target.classList.add(Dropdown._activeClassName);
-
                 clearTimeout(this.timeout);
                 if(navElt.children) {
                     this.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
