@@ -133,6 +133,11 @@
                 return 'open';
             }
         }, {
+            key: '_dividerClassName',
+            get: function get() {
+                return 'divider';
+            }
+        }, {
             key: '_activeClassName',
             get: function get() {
                 return 'active';
@@ -156,7 +161,7 @@
 
         /**
          * @constructor
-         * @param {Array<Dropdown~NavItem|Dropdown~NavMenu>} navList - Object representation of the context menu.
+         * @param {Array<Dropdown~NavItem|Dropdown~NavMenu|Dropdown~NavDivider>} navList - Object representation of the context menu.
          * @param {Dropdown~Options} options - Optional parameters for this instance
          */
         function Dropdown(navList) {
@@ -182,7 +187,7 @@
          *
          * @private 
          *
-         * @param navList {Array<Dropdown~NavItem|Dropdown~NavMenu>} The object representation of the context menu
+         * @param navList {Array<Dropdown~NavItem|Dropdown~NavMenu|Dropdown~NavDivider>} The object representation of the context menu
          */
 
 
@@ -204,7 +209,7 @@
                         navElt = _that$_items$key.navElt;
 
 
-                    if (navElt.disabled) {
+                    if (navElt.disabled || !navElt.label) {
                         e.preventDefault();
                         e.stopPropagation();
                         return;
@@ -232,27 +237,33 @@
                     }
                     li.setAttribute('data-key', navElt.key); // only used for debugging
 
-                    li.innerText = navElt.label;
-
-                    if (navElt.disabled) {
+                    var divider = typeof navElt.label === 'undefined';
+                    if (navElt.disabled || divider) {
                         li.classList.add(Dropdown._disabledClassName);
                     }
+                    if (divider) {
+                        // divider
+                        li.classList.add(Dropdown._dividerClassName);
+                    } else {
+                        li.innerText = navElt.label;
+                    }
+
                     li.addEventListener('mouseleave', function (e) {
-                        if (navElt.disabled) {
-                            return;
-                        }
                         _this2.logger('mouseleave', e);
                         clearTimeout(_this2.timeout);
+
                         e.target.classList.remove(Dropdown._activeClassName);
                     });
                     li.addEventListener('mouseenter', function (e) {
-                        if (navElt.disabled) {
+                        _this2.logger('mouseenter', e);
+                        clearTimeout(_this2.timeout);
+
+                        if (navElt.disabled || divider) {
+                            _this2.timeout = setTimeout(Dropdown._closeRelated.bind(null, e.target), 500);
                             return;
                         }
-                        _this2.logger('mouseenter', e);
 
                         e.target.classList.add(Dropdown._activeClassName);
-
                         clearTimeout(_this2.timeout);
                         if (navElt.children) {
                             _this2.timeout = setTimeout(Dropdown._openNested.bind(null, e.target), 500);
