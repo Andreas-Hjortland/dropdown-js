@@ -248,6 +248,14 @@
                         li.innerText = navElt.label;
                     }
 
+                    if (navElt.icon) {
+                        li.style.backgroundImage = navElt.icon;
+                    } else if (navElt.iconClass) {
+                        var span = document.createElement('span');
+                        span.className = navElt.iconClass + ' icon';
+                        li.insertBefore(span, li.firstChild);
+                    }
+
                     li.addEventListener('mouseleave', function (e) {
                         _this2.logger('mouseleave', e);
                         clearTimeout(_this2.timeout);

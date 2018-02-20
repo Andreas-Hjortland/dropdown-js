@@ -13,6 +13,8 @@ class Dropdown {
      * @typedef {Object} Dropdown~NavItem
      * This is the structure of a navigation item
      * @property {string}  label            - The label which is used in the menu
+     * @property {string}  [icon]           - An icon to be used. This needs to be a path to a valid css
+     *                                        background-image string.
      * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
      * @property {boolean} [disabled=false] - If this is true the item is disabled. When disabled we will not navigate
      *                                        according to the action parameter or run the action callback.
@@ -24,6 +26,8 @@ class Dropdown {
      * @typedef {Object} Dropdown~NavMenu
      * This is the structure of a navigation submenu
      * @property {string} label             - The label which is used in the menu
+     * @property {string} [icon]            - An icon to be used. This needs to be a path to a valid css
+     *                                        background-image string.
      * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
      * @property {boolean} [disabled=false] - If this is true the item is disabled. When disabled it will not be
      *                                        expanded
@@ -259,6 +263,14 @@ class Dropdown {
                 li.classList.add(Dropdown._dividerClassName);
             } else {
                 li.innerText = navElt.label;
+            }
+
+            if(navElt.icon) {
+                li.style.backgroundImage = navElt.icon;
+            } else if(navElt.iconClass) {
+                const span = document.createElement('span');
+                span.className = `${navElt.iconClass} icon`;
+                li.insertBefore(span, li.firstChild);
             }
 
             li.addEventListener('mouseleave', e => {

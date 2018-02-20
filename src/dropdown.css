@@ -1,7 +1,7 @@
 :root {
 	--bgColor        : rgb(242, 242, 242);
 	--hlColor        : rgb(145, 201, 247);
-	--sidePadding    : 1em;
+	--sidePadding    : 2em;
 	--brColor        : color(var(--bgColor) blackness(+25%));
     --dividerPadding : 0.25em;
 }
@@ -33,6 +33,13 @@
 	user-select   : none;
 }
 
+.dropdown li .icon {
+    margin-left : calc(-1 * var(--sidePadding));
+    width       : var(--sidePadding);
+    overflow    : hidden;
+    text-align  : right;
+    padding-right : 0.25em;
+}
 .dropdown li.divider {
     padding        : 0 0 var(--dividerPadding) 0;
 }
