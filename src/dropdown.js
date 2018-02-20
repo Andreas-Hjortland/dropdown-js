@@ -35,8 +35,8 @@ class Dropdown {
      */
 
     /**
+     * The action callback. The <code>this</code> context is the instance of the dropdown itself unless otherwise bound.
      * @callback Dropdown~actionCallback
-     * This is the action callback
      * @param {Event} event - This is the event (either click or keypress) which triggered this handler
      */
 
@@ -48,9 +48,9 @@ class Dropdown {
      */
 
     /**
+     * The logging function. Use this if you want to expose internal logging information.
      * @callback Dropdown~logger
-     * This is the logging function
-     * @param {...*} logItems - This should work similarly to how console.log uses multiple parameters
+     * @param {...*} logItems - This should work similarly to how <code>console.log</code> uses multiple parameters
      */
 
     // Private members
@@ -393,7 +393,7 @@ class Dropdown {
      *
      * @param {Event} evt     - The event that triggered this click
      * @param {any} [context] - Optional context which is set on the Dropdown instance when we open it. This can be
-     *                          anything and is available through `this.context` on the action function
+     *                          anything and is available through <code>this.context</code> on the action function
      */
     openClick(evt, context = undefined) {
         this.logger(evt);
@@ -417,8 +417,8 @@ class Dropdown {
      *                                         left if we don't have any space for it below or to the right. If false we
      *                                         will only expand down and to the right.
      * @param {any} [context]                - Optional context which is set on the Dropdown instance when we open it.
-     *                                         This can be anything and is available through `this.context` on the
-     *                                         action function
+     *                                         This can be anything and is available through <code>this.context</code>
+     *                                         on the action function
      */
     open(left, top, autoExpandDir = true, context = undefined) {
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
