@@ -198,15 +198,14 @@
 
                 var ul = document.createElement('ul');
 
-                var that = this;
                 ul.addEventListener('click', function (e) {
                     var key = e.target.getAttribute('data-key');
-                    if (!key || !that._items[key]) {
+                    if (!key || !_this2._items[key]) {
                         return;
                     }
-                    var _that$_items$key = that._items[key],
-                        li = _that$_items$key.li,
-                        navElt = _that$_items$key.navElt;
+                    var _items$key = _this2._items[key],
+                        li = _items$key.li,
+                        navElt = _items$key.navElt;
 
 
                     if (navElt.disabled || !navElt.label) {
@@ -222,7 +221,7 @@
                     } else if (typeof navElt.action === 'string') {
                         window.location.href = navElt.action;
                     } else if (typeof navElt.action === 'function') {
-                        navElt.action.call(this, e);
+                        navElt.action.call(_this2, e);
                     }
                 });
 
@@ -293,9 +292,9 @@
         }, {
             key: 'setDisabledState',
             value: function setDisabledState(key, disabled) {
-                var _items$key = this._items[key],
-                    li = _items$key.li,
-                    navElt = _items$key.navElt;
+                var _items$key2 = this._items[key],
+                    li = _items$key2.li,
+                    navElt = _items$key2.navElt;
 
                 navElt.disabled = disabled;
                 if (disabled) {
@@ -368,26 +367,30 @@
         }, {
             key: 'openClick',
             value: function openClick(evt) {
+                var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
                 this.logger(evt);
                 evt.stopPropagation();
                 evt.preventDefault();
                 if (evt.clientX && evt.clientY) {
-                    return this.open(window.pageXOffset + evt.clientX, window.pageYOffset + evt.clientY, true);
+                    return this.open(window.pageXOffset + evt.clientX, window.pageYOffset + evt.clientY, true, context);
                 }
 
                 var rect = evt.target.getBoundingClientRect();
-                return this.open(window.pageXOffset + rect.right, window.pageYOffset + rect.bottom, true);
+                return this.open(window.pageXOffset + rect.right, window.pageYOffset + rect.bottom, true, context);
             }
         }, {
             key: 'open',
             value: function open(left, top) {
                 var autoExpandDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+                var context = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
 
                 this.ul.querySelectorAll('.' + Dropdown._openClassName + ',.' + Dropdown._activeClassName).forEach(function (elt) {
                     elt.classList.remove(Dropdown._openClassName);
                     elt.classList.remove(Dropdown._activeClassName);
                 });
                 this.ul.classList.add(Dropdown._openClassName);
+                this.context = context;
 
                 var rect = this.ul.getBoundingClientRect();
                 this.ul.style.left = left + 'px';

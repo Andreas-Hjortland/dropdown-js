@@ -219,13 +219,12 @@ class Dropdown {
     _createList(navList, keyPrefix) {
         const ul = document.createElement('ul');
 
-        var that = this;
-        ul.addEventListener('click', function(e) {
+        ul.addEventListener('click', e => {
             const key = e.target.getAttribute('data-key');
-            if(!key || !that._items[key]) {
+            if(!key || !this._items[key]) {
                 return;
             }
-            const {li, navElt} = that._items[key];
+            const {li, navElt} = this._items[key];
 
             if(navElt.disabled || !navElt.label) {
                 e.preventDefault();
@@ -394,16 +393,16 @@ class Dropdown {
      *
      * @param {Event} evt - The event that triggered this click
      */
-    openClick(evt) {
+    openClick(evt, context = undefined) {
         this.logger(evt);
         evt.stopPropagation();
         evt.preventDefault();
         if(evt.clientX && evt.clientY) {
-            return this.open(window.pageXOffset + evt.clientX, window.pageYOffset + evt.clientY, true);
+            return this.open(window.pageXOffset + evt.clientX, window.pageYOffset + evt.clientY, true, context);
         } 
 
         const rect = evt.target.getBoundingClientRect();
-        return this.open(window.pageXOffset + rect.right, window.pageYOffset + rect.bottom, true);
+        return this.open(window.pageXOffset + rect.right, window.pageYOffset + rect.bottom, true, context);
     }
 
     /**
@@ -416,12 +415,13 @@ class Dropdown {
      *                                         left if we don't have any space for it below or to the right. If false we
      *                                         will only expand down and to the right.
      */
-    open(left, top, autoExpandDir = true) {
+    open(left, top, autoExpandDir = true, context = undefined) {
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
             elt.classList.remove(Dropdown._openClassName);
             elt.classList.remove(Dropdown._activeClassName);
         });
         this.ul.classList.add(Dropdown._openClassName);
+        this.context = context;
 
         const rect = this.ul.getBoundingClientRect();
         this.ul.style.left = `${left}px`;
