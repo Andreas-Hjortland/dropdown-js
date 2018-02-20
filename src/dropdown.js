@@ -391,7 +391,9 @@ class Dropdown {
      * This function will take an event and try to open and position the dropdown next to the mouse pointer or the
      * element the event triggered on.
      *
-     * @param {Event} evt - The event that triggered this click
+     * @param {Event} evt     - The event that triggered this click
+     * @param {any} [context] - Optional context which is set on the Dropdown instance when we open it. This can be
+     *                          anything and is available through `this.context` on the action function
      */
     openClick(evt, context = undefined) {
         this.logger(evt);
@@ -414,6 +416,9 @@ class Dropdown {
      * @param {boolean} [autoExpandDir=true] - If true we will automatically expand the dropdown towards the top or
      *                                         left if we don't have any space for it below or to the right. If false we
      *                                         will only expand down and to the right.
+     * @param {any} [context]                - Optional context which is set on the Dropdown instance when we open it.
+     *                                         This can be anything and is available through `this.context` on the
+     *                                         action function
      */
     open(left, top, autoExpandDir = true, context = undefined) {
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
