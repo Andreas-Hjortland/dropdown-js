@@ -12,7 +12,10 @@ class Dropdown {
     /**
      * @typedef {Object} Dropdown~NavItem
      * This is the structure of a navigation item
-     * @property {string}  label            - The label which is used in the menu
+     * @property {string|function} label    - The label which is used in the menu. If it is a function it will be called
+     *                                        every time the menu is opened and set the label to the return value of
+     *                                        this function. The <code>this</code> object of the function is the
+     *                                        Dropdown instance itself unless otherwise bound.
      * @property {string}  [icon]           - An icon to be used. This needs to be a path to a valid css
      *                                        background-image string.
      * @property {string}  [key]            - A unique key for this item. It will be auto generated if not supplied
@@ -252,7 +255,7 @@ class Dropdown {
             } else {
                 this._items[navElt.key] = { navElt, li };
             }
-            li.setAttribute('data-key', navElt.key); // only used for debugging
+            li.setAttribute('data-key', navElt.key);
 
             const divider = typeof navElt.label === 'undefined';
             if(navElt.disabled || divider) {
@@ -260,6 +263,8 @@ class Dropdown {
             }
             if(divider) { // divider
                 li.classList.add(Dropdown._dividerClassName);
+            } else if(typeof navElt.label === 'function') {
+                li.innerText = navElt.label.call(this);
             } else {
                 li.innerText = navElt.label;
             }
@@ -371,6 +376,17 @@ class Dropdown {
         }
     }
 
+    _updateLabels() {
+        for(let key in this._items) {
+            if(this._items.hasOwnProperty(key)) {
+                const { navElt, li } = this._items[key];
+                if(typeof navElt.label === 'function') {
+                    li.innerText = navElt.label.call(this);
+                }
+            }
+        }
+    }
+
     // Public methods
     /**
      * Close a dropdown and remove all event listeners on it
@@ -421,6 +437,7 @@ class Dropdown {
      *                                         on the action function
      */
     open(left, top, autoExpandDir = true, context = undefined) {
+        this._updateLabels();
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
             elt.classList.remove(Dropdown._openClassName);
             elt.classList.remove(Dropdown._activeClassName);

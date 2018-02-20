@@ -234,7 +234,7 @@
                     } else {
                         _this2._items[navElt.key] = { navElt: navElt, li: li };
                     }
-                    li.setAttribute('data-key', navElt.key); // only used for debugging
+                    li.setAttribute('data-key', navElt.key);
 
                     var divider = typeof navElt.label === 'undefined';
                     if (navElt.disabled || divider) {
@@ -243,6 +243,8 @@
                     if (divider) {
                         // divider
                         li.classList.add(Dropdown._dividerClassName);
+                    } else if (typeof navElt.label === 'function') {
+                        li.innerText = navElt.label.call(_this2);
                     } else {
                         li.innerText = navElt.label;
                     }
@@ -352,6 +354,21 @@
                 }
             }
         }, {
+            key: '_updateLabels',
+            value: function _updateLabels() {
+                for (var key in this._items) {
+                    if (this._items.hasOwnProperty(key)) {
+                        var _items$key3 = this._items[key],
+                            navElt = _items$key3.navElt,
+                            li = _items$key3.li;
+
+                        if (typeof navElt.label === 'function') {
+                            li.innerText = navElt.label.call(this);
+                        }
+                    }
+                }
+            }
+        }, {
             key: 'dismiss',
             value: function dismiss() {
                 this.logger('dismiss');
@@ -385,6 +402,7 @@
                 var autoExpandDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
                 var context = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
 
+                this._updateLabels();
                 this.ul.querySelectorAll('.' + Dropdown._openClassName + ',.' + Dropdown._activeClassName).forEach(function (elt) {
                     elt.classList.remove(Dropdown._openClassName);
                     elt.classList.remove(Dropdown._activeClassName);

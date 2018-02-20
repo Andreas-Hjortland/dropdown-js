@@ -73,6 +73,10 @@
                     label    : 'Item 3', 
                     disabled : true,
                 },
+                {
+                    label    : function() { return new Date().toISOString(); }, 
+                    disabled : false,
+                },
                 { }, // divider
                 {
                     label    : 'Submenu 1',
