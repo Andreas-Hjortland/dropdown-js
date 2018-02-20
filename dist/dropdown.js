@@ -402,13 +402,13 @@
                 var autoExpandDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
                 var context = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
 
+                this.context = context;
                 this._updateLabels();
                 this.ul.querySelectorAll('.' + Dropdown._openClassName + ',.' + Dropdown._activeClassName).forEach(function (elt) {
                     elt.classList.remove(Dropdown._openClassName);
                     elt.classList.remove(Dropdown._activeClassName);
                 });
                 this.ul.classList.add(Dropdown._openClassName);
-                this.context = context;
 
                 var rect = this.ul.getBoundingClientRect();
                 this.ul.style.left = left + 'px';

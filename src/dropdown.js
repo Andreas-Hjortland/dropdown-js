@@ -376,6 +376,11 @@ class Dropdown {
         }
     }
 
+    /**
+     * Update all labels where we have a function that generates the labels instead of a string
+     *
+     * @private
+     */
     _updateLabels() {
         for(let key in this._items) {
             if(this._items.hasOwnProperty(key)) {
@@ -437,13 +442,13 @@ class Dropdown {
      *                                         on the action function
      */
     open(left, top, autoExpandDir = true, context = undefined) {
+        this.context = context;
         this._updateLabels();
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
             elt.classList.remove(Dropdown._openClassName);
             elt.classList.remove(Dropdown._activeClassName);
         });
         this.ul.classList.add(Dropdown._openClassName);
-        this.context = context;
 
         const rect = this.ul.getBoundingClientRect();
         this.ul.style.left = `${left}px`;
