@@ -78,9 +78,9 @@
 	display : block;
 }
 
-.dropdown li.subnav:after {
+.dropdown li.subnav::after {
 	content      : '>';
 	margin-left  : var(--sidePadding);
-	margin-right : calc(-(var(--sidePadding) - 0.5em));
+	margin-right : calc(-1 * (var(--sidePadding) - 0.5em));
 }
 
