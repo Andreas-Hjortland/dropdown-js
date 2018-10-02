@@ -284,7 +284,7 @@
       this._items = {};
       this.ul = this._createList(navList, 'item');
       this.ul.classList.add(Dropdown._baseClassName);
-      this.context = options.context || document.body;
+      this.domcontext = options.context || document.body;
     }
     /**
      * A helper function to create the dom structure of the dropdown
@@ -560,8 +560,8 @@
         var autoExpandDir = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
         var context = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : undefined;
 
-        if (!this.context.contains(this.ul)) {
-          this.context.appendChild(this.ul);
+        if (!this.domcontext.contains(this.ul)) {
+          this.domcontext.appendChild(this.ul);
         }
 
         this.context = context;
