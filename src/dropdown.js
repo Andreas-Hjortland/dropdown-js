@@ -209,7 +209,7 @@ class Dropdown {
         this.ul = this._createList(navList, 'item');
         this.ul.classList.add(Dropdown._baseClassName);
 
-        (options.context ? options.context : document.body).appendChild(this.ul);
+        this.context = options.context || document.body;
     }
 
     /**
@@ -442,6 +442,9 @@ class Dropdown {
      *                                         on the action function
      */
     open(left, top, autoExpandDir = true, context = undefined) {
+        if(!this.context.contains(this.ul)) {
+            this.context.appendChild(this.ul);
+        }
         this.context = context;
         this._updateLabels();
         this.ul.querySelectorAll(`.${Dropdown._openClassName},.${Dropdown._activeClassName}`).forEach(elt => {
